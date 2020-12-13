@@ -2,6 +2,60 @@ function email_test(input) {
 	return !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,8})+$/.test(input.value);
 }
 
+//BildSlider
+let sliders = document.querySelectorAll('._swiper');
+if (sliders) {
+	for (let index = 0; index < sliders.length; index++) {
+		let slider = sliders[index];
+		if (!slider.classList.contains('swiper-bild')) {
+			let slider_items = slider.children;
+			if (slider_items) {
+				for (let index = 0; index < slider_items.length; index++) {
+					let el = slider_items[index];
+					el.classList.add('swiper-slide');
+				}
+			}
+			let slider_content = slider.innerHTML;
+			let slider_wrapper = document.createElement('div');
+			slider_wrapper.classList.add('swiper-wrapper');
+			slider_wrapper.innerHTML = slider_content;
+			slider.innerHTML = '';
+			slider.appendChild(slider_wrapper);
+			slider.classList.add('swiper-bild');
+		}
+		if (slider.classList.contains('_gallery')) {
+			//slider.data('lightGallery').destroy(true);
+		}
+	}
+	sliders_bild_callback();
+}
+
+function sliders_bild_callback(params) { }
+
+let catalog_slider = new Swiper('.catalog__slider', {
+	
+	effect: 'fade',
+	observer: true,
+	observeParents: true,
+	slidesPerView: 1,
+	spaceBetween: 0,
+	loop: true,
+	pagination: {
+		el: '.catalog__slider-pagging',
+		clickable: true,
+	},
+	navigation: {
+		nextEl: '.catalog__navigation-next',
+		prevEl: '.catalog__navigation-prev',
+	},
+	on: {
+		lazyImageReady: function () {
+			ibg();
+		},
+	}
+
+});
+
 var ua = window.navigator.userAgent;
 var msie = ua.indexOf("MSIE ");
 var isMobile = { Android: function () { return navigator.userAgent.match(/Android/i); }, BlackBerry: function () { return navigator.userAgent.match(/BlackBerry/i); }, iOS: function () { return navigator.userAgent.match(/iPhone|iPad|iPod/i); }, Opera: function () { return navigator.userAgent.match(/Opera Mini/i); }, Windows: function () { return navigator.userAgent.match(/IEMobile/i); }, any: function () { return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows()); } };
@@ -16,7 +70,6 @@ if (isIE()) {
 if (isMobile.any()) {
 	document.querySelector('body').classList.add('_touch');
 }
-/*
 function testWebP(callback) {
 	var webP = new Image();
 	webP.onload = webP.onerror = function () {
@@ -31,7 +84,6 @@ testWebP(function (support) {
 		document.querySelector('body').classList.add('_no-webp');
 	}
 });
-*/
 function ibg() {
 	if (isIE()) {
 		let ibg = document.querySelectorAll("._ibg");
@@ -176,28 +228,36 @@ for (let index = 0; index < tabs.length; index++) {
 //=================
 //Spollers
 let spollers = document.querySelectorAll("._spoller");
+let spollersGo = true;
 if (spollers.length > 0) {
 	for (let index = 0; index < spollers.length; index++) {
 		const spoller = spollers[index];
 		spoller.addEventListener("click", function (e) {
-			if (spoller.classList.contains('_spoller-992') && window.innerWidth > 992) {
-				return false;
-			}
-			if (spoller.classList.contains('_spoller-768') && window.innerWidth > 768) {
-				return false;
-			}
-			if (spoller.closest('._spollers').classList.contains('_one')) {
-				let curent_spollers = spoller.closest('._spollers').querySelectorAll('._spoller');
-				for (let i = 0; i < curent_spollers.length; i++) {
-					let el = curent_spollers[i];
-					if (el != spoller) {
-						el.classList.remove('_active');
-						_slideUp(el.nextElementSibling);
+			if (spollersGo) {
+				spollersGo = false;
+				if (spoller.classList.contains('_spoller-992') && window.innerWidth > 992) {
+					return false;
+				}
+				if (spoller.classList.contains('_spoller-768') && window.innerWidth > 768) {
+					return false;
+				}
+				if (spoller.closest('._spollers').classList.contains('_one')) {
+					let curent_spollers = spoller.closest('._spollers').querySelectorAll('._spoller');
+					for (let i = 0; i < curent_spollers.length; i++) {
+						let el = curent_spollers[i];
+						if (el != spoller) {
+							el.classList.remove('_active');
+							_slideUp(el.nextElementSibling);
+						}
 					}
 				}
+				spoller.classList.toggle('_active');
+				_slideToggle(spoller.nextElementSibling);
+
+				setTimeout(function () {
+					spollersGo = true;
+				}, 500);
 			}
-			spoller.classList.toggle('_active');
-			_slideToggle(spoller.nextElementSibling);
 		});
 	}
 }
@@ -521,158 +581,83 @@ animate({
 			Element.prototype.msMatchesSelector;
 	}
 })();
-//BildSlider
-let sliders = document.querySelectorAll('._swiper');
-if (sliders) {
-	for (let index = 0; index < sliders.length; index++) {
-		let slider = sliders[index];
-		if (!slider.classList.contains('swiper-bild')) {
-			let slider_items = slider.children;
-			if (slider_items) {
-				for (let index = 0; index < slider_items.length; index++) {
-					let el = slider_items[index];
-					el.classList.add('swiper-slide');
-				}
-			}
-			let slider_content = slider.innerHTML;
-			let slider_wrapper = document.createElement('div');
-			slider_wrapper.classList.add('swiper-wrapper');
-			slider_wrapper.innerHTML = slider_content;
-			slider.innerHTML = '';
-			slider.appendChild(slider_wrapper);
-			slider.classList.add('swiper-bild');
-		}
-		if (slider.classList.contains('_gallery')) {
-			//slider.data('lightGallery').destroy(true);
-		}
+
+map(1);
+
+function map(n) {
+	ymaps.ready(init);
+	function init() {
+		// Создание карты.
+		var myMap = new ymaps.Map("map", {
+			// Координаты центра карты.
+			// Порядок по умолчанию: «широта, долгота».
+			// Чтобы не определять координаты центра карты вручную,
+			// воспользуйтесь инструментом Определение координат.
+			// controls: [],
+			center: [53.90670995022666,27.56780025012207],
+			// Уровень масштабирования. Допустимые значения:
+			// от 0 (весь мир) до 19.
+			zoom: 16
+		});
+
+		let myPlacemark = new ymaps.Placemark(myMap.getCenter(), {
+			hintContent: 'Центр',
+			balloonContent: 'Это метка 1'
+		},{
+			// Опции.
+			balloonContentHeader: 'Mistoun',
+			balloonContentBody: 'Москва, Николоямская 40с1',
+			balloonContentFooter: '+ 7(495) 507-54 - 90',
+			hasBalloon: true,
+			hideIconOnBalloonOpen: true,
+
+			hasBalloon: false,
+			hideIconOnBalloonOpen: false,
+			// Необходимо указать данный тип макета.
+			iconLayout: 'default#image',
+			// Своё изображение иконки метки.
+			// iconImageHref: 'img/icons/map.svg',
+			// Размеры метки.
+			// iconImageSize: [40, 40],
+			// Смещение левого верхнего угла иконки относительно
+			// её "ножки" (точки привязки).
+			iconImageOffset: [-20, -20],
+			// Смещение слоя с содержимым относительно слоя с картинкой.
+			iconContentOffset: [0, 0],
+		}),
+		myPlacemarkWithContent = new ymaps.Placemark([53.905468240623186,27.572864260742193], {
+			hintContent: 'Объект',
+			balloonContent: 'Это метка 2',
+			iconContent: '16'
+	  }, {
+		// balloonContentHeader: 'Mistoun',
+		// balloonContentBody: 'Москва, Николоямская 40с1',
+		// balloonContentFooter: '+ 7(495) 507-54 - 90',
+		hasBalloon: true,
+		hideIconOnBalloonOpen: true,
+
+		hasBalloon: true,
+		hideIconOnBalloonOpen: false,
+		// Необходимо указать данный тип макета.
+		iconLayout: 'default#image',
+		// Своё изображение иконки метки.
+		// iconImageHref: 'img/icons/map.svg',
+		// Размеры метки.
+		// iconImageSize: [40, 40],
+		// Смещение левого верхнего угла иконки относительно
+		// её "ножки" (точки привязки).
+		// iconImageOffset: [-20, -20],
+		// Смещение слоя с содержимым относительно слоя с картинкой.
+		iconContentOffset: [0, 0],
+	  });
+
+
+		myMap.geoObjects.add(myPlacemark);
+myMap.geoObjects.add(myPlacemarkWithContent);
+		myMap.behaviors.disable('scrollZoom');
+	  
 	}
-	sliders_bild_callback();
 }
-
-function sliders_bild_callback(params) { }
-
-let slider_mainblock = new Swiper('.mainblock__slider', {
-	/*
-	effect: 'fade',
-	autoplay: {
-		delay: 3000,
-		disableOnInteraction: false,
-	},
-	*/
-	observer: true,
-	observeParents: true,
-	slidesPerView: 1,
-	spaceBetween: 0,
-	// autoHeight: true,
-	speed: 800,
-	//touchRatio: 0,
-	//simulateTouch: false,
-	loop: true,
-	//preloadImages: false,
-	// lazy: true,
-	// Dotts
-	//pagination: {
-	//	el: '.slider-quality__pagging',
-	//	clickable: true,
-	//},
-	// Arrows
-	navigation: {
-		nextEl: '.about__more .more__item_next',
-		prevEl: '.about__more .more__item_prev',
-	},
-	/*
-	breakpoints: {
-		320: {
-			slidesPerView: 1,
-			spaceBetween: 0,
-			autoHeight: true,
-		},
-		768: {
-			slidesPerView: 2,
-			spaceBetween: 20,
-		},
-		992: {
-			slidesPerView: 3,
-			spaceBetween: 20,
-		},
-		1268: {
-			slidesPerView: 4,
-			spaceBetween: 30,
-		},
-	},
-	*/
-	on: {
-		lazyImageReady: function () {
-			ibg();
-		},
-	}
-	// And if we need scrollbar
-	//scrollbar: {
-	//	el: '.swiper-scrollbar',
-	//},
-});
-
-let slider_teamblock = new Swiper('.team__row', {
-	/*
-	effect: 'fade',
-	autoplay: {
-		delay: 3000,
-		disableOnInteraction: false,
-	},
-	*/
-	observer: true,
-	observeParents: true,
-	// slidesPerView: 3,
-	spaceBetween: 0,
-	autoHeight: true,
-	speed: 800,
-	//touchRatio: 0,
-	//simulateTouch: false,
-	loop: true,
-	//preloadImages: false,
-	// lazy: true,
-	// Dotts
-	pagination: {
-		el: '.team__footer',
-		clickable: true,
-	},
-	// Arrows
-	navigation: {
-		nextEl: '.about__more .more__item_next',
-		prevEl: '.about__more .more__item_prev',
-	},
-	
-	breakpoints: {
-		320: {
-			slidesPerView: 1,
-			spaceBetween: 0,
-			autoHeight: true,
-		},
-		768: {
-			slidesPerView: 2,
-			// spaceBetween: 20,
-		},
-		992: {
-			slidesPerView: 3,
-			// spaceBetween: 20,
-		},
-		1268: {
-			slidesPerView: 3,
-			// spaceBetween: 30,
-		},
-	},
-	
-	on: {
-		lazyImageReady: function () {
-			ibg();
-		},
-	}
-	// And if we need scrollbar
-	//scrollbar: {
-	//	el: '.swiper-scrollbar',
-	//},
-});
-
 
 //let btn = document.querySelectorAll('button[type="submit"],input[type="submit"]');
 let forms = document.querySelectorAll('form');
@@ -682,24 +667,43 @@ if (forms.length > 0) {
 		el.addEventListener('submit', form_submit);
 	}
 }
-function form_submit(e) {
-	let btn = event.target;
+async function form_submit(e) {
+	let btn = e.target;
 	let form = btn.closest('form');
-	let message = form.getAttribute('data-message');
 	let error = form_validate(form);
 	if (error == 0) {
+		let formAction = form.getAttribute('action') ? form.getAttribute('action').trim() : '#';
+		let formMethod = form.getAttribute('method') ? form.getAttribute('method').trim() : 'GET';
+		const message = form.getAttribute('data-message');
+		const ajax = form.getAttribute('data-ajax');
+
 		//SendForm
-		form_clean(form);
-		if (message) {
-			popup_open('message-' + message);
+		if (ajax) {
 			e.preventDefault();
+			let formData = new FormData(form);
+			form.classList.add('_sending');
+			let response = await fetch(formAction, {
+				method: formMethod,
+				body: formData
+			});
+			if (response.ok) {
+				let result = await response.json();
+				form.classList.remove('_sending');
+				if (message) {
+					popup_open('_' + message + '-message');
+				}
+				form_clean(form);
+			} else {
+				alert("Ошибка");
+				form.classList.remove('_sending');
+			}
 		}
 	} else {
 		let form_error = form.querySelectorAll('._error');
 		if (form_error && form.classList.contains('_goto-error')) {
 			_goto(form_error[0], 1000, 50);
 		}
-		event.preventDefault();
+		e.preventDefault();
 	}
 }
 function form_validate(form) {
@@ -820,7 +824,7 @@ function selects_init() {
 		selects_close(e);
 	});
 	document.addEventListener('keydown', function (e) {
-		if (e.which == 27) {
+		if (e.code === 'Escape') {
 			selects_close(e);
 		}
 	});
@@ -1003,7 +1007,7 @@ function inputs_init(inputs) {
 					//'+38(999) 999 9999'
 					//'+375(99)999-99-99'
 					input.classList.add('_mask');
-					Inputmask("+375 (99) 9999999", {
+					Inputmask({ regex: "([+]{1}[0-9]+)|([0-9]+)" }, {
 						//"placeholder": '',
 						clearIncomplete: true,
 						clearMaskOnLostFocus: true,
@@ -1073,7 +1077,7 @@ function input_clear_mask(input, input_g_value) {
 	input_focus_remove(input);
 }
 
-
+//QUANTITY
 let quantityButtons = document.querySelectorAll('.quantity__button');
 if (quantityButtons.length > 0) {
 	for (let index = 0; index < quantityButtons.length; index++) {
@@ -1090,6 +1094,37 @@ if (quantityButtons.length > 0) {
 			}
 			quantityButton.closest('.quantity').querySelector('input').value = value;
 		});
+	}
+}
+
+//RANGE
+const priceSlider = document.querySelector('.price-filter__slider');
+if (priceSlider) {
+	noUiSlider.create(priceSlider, {
+		start: [0, 200000],
+		connect: true,
+		tooltips: [wNumb({ decimals: 0 }), wNumb({ decimals: 0 })],
+		range: {
+			'min': [0],
+			'max': [200000]
+		}
+	});
+
+	const priceStart = document.getElementById('price-start');
+	const priceEnd = document.getElementById('price-end');
+	priceStart.addEventListener('change', setPriceValues);
+	priceEnd.addEventListener('change', setPriceValues);
+
+	function setPriceValues() {
+		let priceStartValue;
+		let priceEndValue;
+		if (priceStart.value != '') {
+			priceStartValue = priceStart.value;
+		}
+		if (priceEnd.value != '') {
+			priceEndValue = priceEnd.value;
+		}
+		priceSlider.noUiSlider.set([priceStartValue, priceEndValue]);
 	}
 }
 let scr_body = document.querySelector('body');
@@ -1363,7 +1398,7 @@ function _goto(target_block, speed, offset = 0) {
 	//}
 	let options = {
 		speedAsDuration: true,
-		speed: 1000,
+		speed: speed,
 		header: header,
 		offset: offset,
 		easing: 'easeOutQuad',
