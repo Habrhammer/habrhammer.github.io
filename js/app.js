@@ -1538,3 +1538,23 @@ function scroll_animate(event) {
 	//If native scroll
 	//disableScroll();
 }
+
+
+let cont_map = document.querySelector('.contacts__map');
+let text = document.querySelector('.text');
+
+cont_map.addEventListener('touchmove', handleMapMove);
+
+// handleMapMove = (e) => {
+//    if(e.touches.length == 2){
+//      console.log("yay, two finger press")
+//    }
+// };
+
+function handleMapMove(e) {
+	if (e.touches.length == 1) {
+		text.innerHTML = 'Свайп';
+	}else if(e.touches.length == 2){
+		text.innerHTML = 'ДаблСвайп';
+	}
+}
