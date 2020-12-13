@@ -1540,10 +1540,10 @@ function scroll_animate(event) {
 }
 
 
-let cont_map = document.querySelector('.contacts__map');
-let text = document.querySelector('.text');
+// let cont_map = document.querySelector('.contacts__map');
+// let text = document.querySelector('.text');
 
-cont_map.addEventListener('touchmove', handleMapMove);
+// cont_map.addEventListener('touchmove', handleMapMove);
 
 // handleMapMove = (e) => {
 //    if(e.touches.length == 2){
@@ -1551,10 +1551,10 @@ cont_map.addEventListener('touchmove', handleMapMove);
 //    }
 // };
 
-function handleMapMove(e) {
-	if (e.touches.length == 1) {
-		text.innerHTML = 'Свайп';
-	}else if(e.touches.length == 2){
-		text.innerHTML = 'ДаблСвайп';
-	}
-}
+// function handleMapMove(e) {
+// 	if (e.touches.length == 1) {
+// 		text.innerHTML = 'Свайп';
+// 	}else if(e.touches.length == 2){
+// 		text.innerHTML = 'ДаблСвайп';
+// 	}
+// }
